@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Testing</title>
+    <style>
+      .fail {
+        color: red;
+        font-weight: bold;
+      }
+      .success {
+        color: green;
+        text-decoration: italic;
+      }
+    </style>
+    <script>
+      var temp = console.log, lines = [];
+      console.log = function(body) {
+        if (typeof body == "object") {
+          body = JSON.stringify(body);
+        }
+        lines.push(body);
+        temp.call(console, body);
+      }
+    </script>
+    <script src="./testing/testtest.js"></script>
+    <script src="./testing/Expectable/expecting.js"></script>
+    <script src="./testing/Expectable/expectable.js"></script>
+    <script src="./testing/Expectable/expect.test.js"></script>
+    <script src="./testing/Suitener/suitener.js"></script>
+    <script src="./testing/Suitener/suitener.test.js"></script>
+    <script src="./runtest.js"></script>
+    <script>
+      var runner;
+      (function(){
+        runner = new TestRunner();
+        runner.init();
+        tests.run();
+      })()
+    </script>
+    <script src="./testing/Mockabilly/mockabilly.js"></script>
+    <script src="./testing/Mockabilly/mockabilly_test.js"></script>
+    <script src="./extensions/Object/object.js"></script>
+    <script src="./extensions/Object/object.test.js"></script>
+    <script>
+      (function(){
+        this.runAllTests = function() {
+          document.getElementById("output").innerHTML = runner.showTests();
+          document.getElementById("console").innerHTML = lines.join("\n");
+        }
+      })()
+    </script>
+  </head>
+  <body onload="runAllTests()">
+    <pre><ul id="output">
+    </ul></pre>
+    <pre id="console"></pre>
+  </body>
+</html>
+
+
