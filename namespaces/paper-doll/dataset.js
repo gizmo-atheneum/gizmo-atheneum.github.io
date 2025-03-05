@@ -138,7 +138,8 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
   };
   const colorValidator = (color) => (typeof color === "string") // todo
   const minMaxValidator = function(minFn, maxFn) {
-    return (value, dataset, layer) => (value >= minFn(dataset,layer) && )
+    // todo
+    // return (value, dataset, layer) => (value >= minFn(dataset,layer) && )
   }
   const schematicFields = "bodyType,version,bgPattern,bgColor,bodyScale,layers".split(",");
   const layerFields = "part,index,base,detail,outline,pattern,shading,opacity,rotate,resizeX,resizeY,moveX,moveY".split(",");
@@ -233,25 +234,41 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
       ${ svgLayers.map((layer) => `<g>${ layer }</g>`) }
     </svg>`;
   }
+  const buildWithSelectableLayers = function(dataset, schematic, selectLayer, width, height) {
+    const { dim, defs, background, svgLayers } = buildSVGComponents(dataset, schematic);
+    return <svg width={ width } height={ height } viewBox={ dim.join(" ") }>
+      <defs dangerouslySetInnerHTML={{ __html: defs }}></defs>
+      <g dangerouslySetInnerHTML={{ __html: background }}></g>
+      { svgLayers.map((layer, index) => <a 
+          href="#" 
+          dangerouslySetInnerHTML={{ __html: layer }}
+          onClick={(e) => {
+            e.preventDefault();
+            selectLayer(index);
+          }}></a>) }
+    </svg>;
+  }
   const Dataset = function(dataset) {
     this.buildSVGComponents = function(schematic) {
       return buildSVGComponents(dataset, schematic);
     };
     this.drawSVG = function(schematic) {
-      return drawSVG(dataset, schematic);
+      return drawSVG(dataset, schematic); // todo - add width and height
     };
+    this.buildWithSelectableLayers = function({schematic, selectLayer, width, height}) {
+      return buildWithSelectableLayers(dataset, schematic, selectLayer, width, height);
+    }
   };
-  Dataset.getBodyScales = function() {
+  const getBodyScales = function() {
     return Array.from(Object.keys(SCALES));
   }
-  Dataset.getVersions = function() {
+  const getVersions = function() {
     return Object.entries(versions).reduce((acc, [k,v]) => {
       acc[k] = Array.from(v);
       return acc;
     }, {});
   }
-  Dataset.calcFrameFromScreen = calcFrameFromScreen;
-  Dataset.load = function(bodyType, version, onSuccess, onFail, onStateChange) {
+  const load = function(bodyType, version, onSuccess, onFail, onStateChange) {
     if(!(bodyType in versions)) {
       throw `"${bodyType}" is not a valid dataset name`;
     }
@@ -278,5 +295,5 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
       }
     });
   }
-  return Dataset;
+  return { getBodyScales, getVersions, calcFrameFromScreen, load };
 });
