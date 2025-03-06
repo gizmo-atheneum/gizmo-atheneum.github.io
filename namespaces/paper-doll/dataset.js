@@ -2,7 +2,7 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
   "gizmo-atheneum.namespaces.Ajax": "Ajax",
   "gizmo-atheneum.namespaces.Point": "XY"
 }, ({ Ajax, XY }) => {
-  const baseURL = "https://scullery-plateau.github.io/apps/outfitter/datasets";
+  const baseURL = "https://gizmo-atheneum.github.io/paper-doll-tools/resources/datasets";
   const SCALES = {
     lanky: [0.8, 1.1],
     thin: [0.8, 1.0],
@@ -234,20 +234,6 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
       ${ svgLayers.map((layer) => `<g>${ layer }</g>`) }
     </svg>`;
   }
-  const buildWithSelectableLayers = function(dataset, schematic, selectLayer, width, height) {
-    const { dim, defs, background, svgLayers } = buildSVGComponents(dataset, schematic);
-    return <svg width={ width } height={ height } viewBox={ dim.join(" ") }>
-      <defs dangerouslySetInnerHTML={{ __html: defs }}></defs>
-      <g dangerouslySetInnerHTML={{ __html: background }}></g>
-      { svgLayers.map((layer, index) => <a 
-          href="#" 
-          dangerouslySetInnerHTML={{ __html: layer }}
-          onClick={(e) => {
-            e.preventDefault();
-            selectLayer(index);
-          }}></a>) }
-    </svg>;
-  }
   const Dataset = function(dataset) {
     this.buildSVGComponents = function(schematic) {
       return buildSVGComponents(dataset, schematic);
@@ -255,9 +241,6 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
     this.drawSVG = function(schematic) {
       return drawSVG(dataset, schematic); // todo - add width and height
     };
-    this.buildWithSelectableLayers = function({schematic, selectLayer, width, height}) {
-      return buildWithSelectableLayers(dataset, schematic, selectLayer, width, height);
-    }
   };
   const getBodyScales = function() {
     return Array.from(Object.keys(SCALES));
