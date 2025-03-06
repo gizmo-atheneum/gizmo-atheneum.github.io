@@ -209,7 +209,7 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
       }
       return `<g opacity="${layer.opacity || 1.0}" transform="rotate(${layer.rotate || 0}, ${cx}, ${cy}) matrix(${flipX},0.0,0.0,${flipY},${moveX},${moveY})">${group.join('')}</g>`
     });
-    const { minX, minY, width, height, frameWidth, frameHeight} = getImgDim(minmax);
+    const { minX, minY, width, height} = getImgDim(minmax);
     const background = [];
     if (schematic.bgColor) {
       background.push(`<rect x="${minX}" y="${minY}" width="${width}" height="${height}" fill="${schematic.bgColor}" stroke="none"/>`)
@@ -219,20 +219,19 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
     }
     return { 
       dim: [ minX, minY, width, height ],
-      width: frameWidth, 
-      height: frameHeight, 
       defs: buildDefs(meta,defs), 
       background, 
       svgLayers 
     };
   }
-  const drawSVG = function(dataset, schematic, width, height) {
+  const drawSVG = function(dataset, schematic) {
     const { dim, defs, background, svgLayers } = buildSVGComponents(dataset, schematic);
-    return `<svg width="${ width }" height="${ height }" viewBox="${ dim.join(" ") }">
-      <defs>${ defs }</defs>
-      <g>${ background }</g>
-      ${ svgLayers.map((layer) => `<g>${ layer }</g>`) }
-    </svg>`;
+    return {
+      viewBox: dim.join(" "),
+      content: `<defs>${ defs }</defs>
+        <g>${ background }</g>
+        ${ svgLayers.map((layer) => `<g>${ layer }</g>`) }`
+    }
   }
   const Dataset = function(dataset) {
     this.buildSVGComponents = function(schematic) {
