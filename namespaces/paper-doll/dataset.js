@@ -257,7 +257,7 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
     if(versions[bodyType].indexOf(version) < 0) {
       throw `"${version}" is not a valid version of "${bodyType}"`;
     }
-    const filepath = `${baseURL}/${bodyType}.${version}.json`
+    const filepath = `${baseURL}${bodyType}.${version}.json`
     Ajax.get(filepath,{
       failure: onFail,
       stateChange: onStateChange,
