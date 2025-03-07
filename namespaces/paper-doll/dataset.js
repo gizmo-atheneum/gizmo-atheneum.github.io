@@ -261,7 +261,7 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
     Ajax.get(filepath,{
       failure: onFail,
       stateChange: onStateChange,
-      success: ({ responseText }) => {
+      success: (responseText) => {
         try {
           const metadata = JSON.parse(responseText);
           metadata.patternCount = Object.keys(metadata.patterns).length;
