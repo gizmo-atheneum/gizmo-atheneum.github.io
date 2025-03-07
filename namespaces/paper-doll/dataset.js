@@ -240,6 +240,15 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
     this.drawSVG = function(schematic) {
       return drawSVG(dataset, schematic); // todo - add width and height
     };
+    this.getPart = function(part) {
+      return dataset.parts[part];
+    }
+    this.getPatternCount = function() {
+      return dataset.patternCount;
+    }
+    this.getShadingCount = function() {
+      return dataset.shadingCount;
+    }
   };
   const getBodyScales = function() {
     return Array.from(Object.keys(SCALES));
