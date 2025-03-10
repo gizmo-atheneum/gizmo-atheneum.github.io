@@ -55,11 +55,6 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
       return document.body.clientWidth;
     }
   });
-  const calcFrameFromScreen = function(percentOfScreenWidth, percentOfScreenHeight) {
-    const frameHeight = getScreenHeight() * percentOfScreenHeight;
-    const frameWidth = getScreenWidth() * percentOfScreenWidth;
-    return [ Math.min(frameWidth, frameHeight * width / height), Math.min(frameHeight, frameWidth * height / width) ];
-  }
   const getPoint = function(layer,xField,yField,defaultPoint) {
     const [defaultX, defaultY] = defaultPoint.toJSON();
     const [xVal,yVal] = [xField,yField].map((field) => layer[field]);
@@ -97,7 +92,7 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
     minmax.max = minmax.max.max(partMax.toJSON());
     return partMin.midpoint(partMax.toJSON());
   }
-  const getImgDim = function(minmax) {
+  const getImgDim = function(minmax, percentOfScreenWidth, percentOfScreenHeight) {
     let [minX, minY] = minmax.min.toJSON();
     let [maxX, maxY] = minmax.max.toJSON();
     const halfWidth = Math.max(Math.abs(maxX), Math.abs(minX));
@@ -110,7 +105,10 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
     [maxX, maxY] = minmax.max.toJSON();
     const width = maxX - minX;
     const height = maxY - minY;
-    return { minX, minY, width, height};
+    let frameHeight = getScreenHeight() * percentOfScreenHeight;
+    let frameWidth = getScreenWidth() * percentOfScreenWidth;
+    [ frameWidth, frameHeight ] = [ Math.min(frameWidth, frameHeight * width / height), Math.min(frameHeight, frameWidth * height / width) ];
+    return { minX, minY, width, height, frameWidth, frameHeight };
   }
   const getPatternId = function(patternIndex) {
     return patternIndex >= 0 && `patterns-${ patternIndex >= 10 ? '' : '0' }${ patternIndex }`;
@@ -151,7 +149,7 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
     pattern: (pattern, dataset) => (pattern >= 0 && pattern < dataset.patternCount)
     // todo
   };
-  const buildSVGComponents = function(meta, schematic) {
+  const buildSVGComponents = function(meta, schematic, percentOfScreenWidth, percentOfScreenHeight) {
     const minmax = {
       min:new XY([0, 0]),
       max:new XY([0, 0])
@@ -209,7 +207,7 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
       }
       return `<g opacity="${layer.opacity || 1.0}" transform="rotate(${layer.rotate || 0}, ${cx}, ${cy}) matrix(${flipX},0.0,0.0,${flipY},${moveX},${moveY})">${group.join('')}</g>`
     });
-    const { minX, minY, width, height} = getImgDim(minmax);
+    const { minX, minY, width, height, frameWidth, frameHeight } = getImgDim(minmax, percentOfScreenWidth, percentOfScreenHeight);
     const background = [];
     if (schematic.bgColor) {
       background.push(`<rect x="${minX}" y="${minY}" width="${width}" height="${height}" fill="${schematic.bgColor}" stroke="none"/>`)
@@ -220,12 +218,14 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
     return { 
       dim: [ minX, minY, width, height ],
       defs: buildDefs(meta,defs), 
+      frameWidth,
+      frameHeight,
       background, 
       svgLayers 
     };
   }
-  const drawSVG = function(dataset, schematic) {
-    const { dim, defs, background, svgLayers } = buildSVGComponents(dataset, schematic);
+  const drawSVG = function(dataset, schematic, percentOfScreenWidth, percentOfScreenHeight) {
+    const { dim, defs, background, svgLayers } = buildSVGComponents(dataset, schematic, percentOfScreenWidth, percentOfScreenHeight);
     return {
       viewBox: dim.join(" "),
       content: `<defs>${ defs }</defs>
@@ -233,12 +233,12 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
         ${ svgLayers.map((layer) => `<g>${ layer }</g>`) }`
     }
   }
-  const Dataset = function(dataset) {
+  const Dataset = function(dataset, percentOfScreenWidth, percentOfScreenHeight) {
     this.buildSVGComponents = function(schematic) {
-      return buildSVGComponents(dataset, schematic);
+      return buildSVGComponents(dataset, schematic, percentOfScreenWidth, percentOfScreenHeight);
     };
     this.drawSVG = function(schematic) {
-      return drawSVG(dataset, schematic); // todo - add width and height
+      return drawSVG(dataset, schematic, percentOfScreenWidth, percentOfScreenHeight); // todo - add width and height
     };
     this.getPart = function(part) {
       return dataset.parts[part];
@@ -286,5 +286,5 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
       }
     });
   }
-  return { getBodyScales, getVersions, calcFrameFromScreen, load };
+  return { getBodyScales, getVersions, load };
 });
