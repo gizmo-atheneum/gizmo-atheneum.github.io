@@ -259,7 +259,7 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
       return acc;
     }, {});
   }
-  const load = function(bodyType, version, onSuccess, onFail, onStateChange) {
+  const load = function(bodyType, version, percentOfScreenWidth, percentOfScreenHeight, onSuccess, onFail, onStateChange) {
     if(!(bodyType in versions)) {
       throw `"${bodyType}" is not a valid dataset name`;
     }
@@ -275,7 +275,7 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
           const metadata = JSON.parse(responseText);
           metadata.patternCount = Object.keys(metadata.patterns).length;
           metadata.shadingCount = Object.keys(metadata.shadings).length;
-          onSuccess(new Dataset(metadata));
+          onSuccess(new Dataset(metadata, percentOfScreenWidth, percentOfScreenHeight));
         } catch (e) {
           onFail({ 
             requestedFile: filepath,
