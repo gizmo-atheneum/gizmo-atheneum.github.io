@@ -3,6 +3,14 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
   "gizmo-atheneum.namespaces.Point": "XY"
 }, ({ Ajax, XY }) => {
   const baseURL = "https://gizmo-atheneum.github.io/paper-doll-tools/resources/datasets/";
+  const latestVersion = "0.0.1";
+  const defaultVersion = "0.0.1";
+  const getLatestVersion = function() {
+    return latestVersion;
+  }
+  const getDefaultVersion = function() {
+    return defaultVersion;
+  }
   const SCALES = {
     lanky: [0.8, 1.1],
     thin: [0.8, 1.0],
@@ -286,5 +294,5 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
       }
     });
   }
-  return { getBodyScales, getVersions, load };
+  return { getBodyScales, getVersions, getLatestVersion, getDefaultVersion, load };
 });
