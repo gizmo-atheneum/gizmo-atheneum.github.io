@@ -233,12 +233,14 @@ namespace("gizmo-atheneum.namespaces.paper-doll.Dataset", {
     };
   }
   const drawSVG = function(dataset, schematic, percentOfScreenWidth, percentOfScreenHeight) {
-    const { dim, defs, background, svgLayers } = buildSVGComponents(dataset, schematic, percentOfScreenWidth, percentOfScreenHeight);
+    const { dim, defs, background, svgLayers, frameWidth, frameHeight } = buildSVGComponents(dataset, schematic, percentOfScreenWidth, percentOfScreenHeight);
     return {
       viewBox: dim.join(" "),
       content: `<defs>${ defs }</defs>
         <g>${ background }</g>
-        ${ svgLayers.map((layer) => `<g>${ layer }</g>`) }`
+        ${ svgLayers.map((layer) => `<g>${ layer }</g>`) }`,
+      width: frameWidth,
+      height: frameHeight
     }
   }
   const Dataset = function(dataset, percentOfScreenWidth, percentOfScreenHeight) {
